@@ -36,24 +36,30 @@ app.get("/", async (req, res) => {
   });
 });
 
-app.post("/add", (req, res) => {
+app.post("/add", async (req, res) => {
   const item = req.body.newItem;
-  items.push({ title: item });
-  db.query("insert into items (title) values ($1)", [item]);
-  res.redirect("/");
+  try {
+    await db.query("insert into items (title) values ($1)", [item]);
+    res.redirect("/");
+  } catch (error) {
+    console.log(error);
+  }
 });
 
-app.post("/edit", (req, res) => {
+app.post("/edit", async (req, res) => {
   const updateID = req.body.updatedItemId;
   const updateTitle = req.body.updatedItemTitle;
-  console.log(updateID, updateTitle);
 
-  db.query("update items set title = $1 where id = $2", [
-    updateTitle,
-    updateID,
-  ]);
+  try {
+    await db.query("update items set title = $1 where id = $2", [
+      updateTitle,
+      updateID,
+    ]);
 
-  res.redirect("/");
+    res.redirect("/");
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 app.post("/delete", (req, res) => {
